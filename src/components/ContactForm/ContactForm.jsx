@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 
-const ContactForm = ({}) => {
+const ContactForm = ({onAddContact}) => {
     
     const [name, setName] = useState('');
     const [number, setNumber] = useState('');
@@ -24,6 +24,8 @@ const ContactForm = ({}) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
+
+        onAddContact({name, number})
 
         setName('');
         setNumber('');

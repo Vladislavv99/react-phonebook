@@ -1,6 +1,8 @@
 import { useState } from "react";
 import ContactForm from "./ContactForm/ContactForm";
 import ContactList from "./ContactList/ContactList";
+import { nanoid } from "nanoid";
+import Filter from "./Filter/Filter";
 
 
 export const App = () => {
@@ -13,7 +15,33 @@ export const App = () => {
   ]);
   const [filter, setFilter] = useState('');
 
+  const addContact = ({ name, number }) => {
 
+    const searchSameName = contacts
+      .map(contact => contact.name.toLocaleLowerCase()).includes(name.toLocaleLowerCase())
+
+    if (searchSameName) {
+      alert(`${name} is already in contacts`)
+    } else if (name.length === 0) {
+      alert(`Name must be filled`)
+    } else {
+      const contact = {
+        id: nanoid(),
+        name,
+        number
+      }
+      setContacts(prevState => [...prevState, contact]);
+    }
+  }
+
+  const changeFilter = e => {
+    const { value } = e.target;
+    setFilter(value)
+  }
+
+  const filteredContacts = () => {
+    return contacts.filter(contact => contact.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase()))
+  }
 
   const removeContact = (contactId) => {
     setContacts(prevState => prevState.filter(contact => contact.id !== contactId))
@@ -22,9 +50,10 @@ export const App = () => {
   return (
     <div>
       <h1>PhoneBook</h1>
-      <ContactForm />
+      <ContactForm onAddContact={addContact} />
       <h1>Contacts</h1>
-      {contacts.length > 0 && <ContactList contacts={contacts} onRemoveContact={removeContact} />}
+      {contacts.length > 1 && <Filter value={filter} onChangeFilter={changeFilter}/>}
+      <ContactList contacts={filteredContacts()} onRemoveContact={removeContact} />
     </div>  
   );
 };
